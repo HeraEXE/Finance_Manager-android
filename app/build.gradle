@@ -27,6 +27,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -101,4 +104,8 @@ dependencies {
 
     // Circle Image View
     implementation "de.hdodenhof:circleimageview:$circle_image_view_version"
+
+
+    // Picasso
+    implementation "com.squareup.picasso:picasso:$picasso_version"
 }

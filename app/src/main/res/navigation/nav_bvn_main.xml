@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_bvn_main"
+    app:startDestination="@id/overviewFragment">
+    <fragment
+        android:id="@+id/overviewFragment"
+        android:name="com.hera.inancemanager.ui.overview.OverviewFragment"
+        android:label="fragment_overview"
+        tools:layout="@layout/fragment_overview" >
+        <action
+            android:id="@+id/action_overviewFragment_to_historyFragment"
+            app:destination="@id/historyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditEntryFragment"
+        android:name="com.hera.inancemanager.ui.addeditentry.AddEditEntryFragment"
+        android:label="fragment_add_edit_entry"
+        tools:layout="@layout/fragment_add_edit_entry" >
+        <argument
+            android:name="entry"
+            app:argType="com.hera.inancemanager.data.models.Entry"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_addEditEntryFragment_to_historyFragment"
+            app:destination="@id/historyFragment"
+            app:popUpTo="@id/overviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.hera.inancemanager.ui.history.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" >
+        <argument
+            android:name="type"
+            app:argType="integer"
+            android:defaultValue="2" />
+        <action
+            android:id="@+id/action_historyFragment_to_addEditEntryFragment"
+            app:destination="@id/addEditEntryFragment" />
+    </fragment>
+</navigation>
