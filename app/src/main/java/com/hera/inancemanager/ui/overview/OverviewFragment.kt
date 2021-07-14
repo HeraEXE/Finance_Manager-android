@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.preferences.core.preferencesOf
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.fragment.findNavController
 import com.hera.inancemanager.R
 import com.hera.inancemanager.databinding.FragmentOverviewBinding
@@ -17,7 +19,10 @@ import com.hera.inancemanager.util.Constants.KEY_EXPENSE
 import com.hera.inancemanager.util.Constants.KEY_INCOME
 import com.hera.inancemanager.util.Constants.KEY_TOTAL
 import com.hera.inancemanager.util.Constants.SHARED_PREFS_NAME
+import com.hera.inancemanager.util.dataStore
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @AndroidEntryPoint
 class OverviewFragment : Fragment(R.layout.fragment_overview) {
@@ -38,9 +43,9 @@ class OverviewFragment : Fragment(R.layout.fragment_overview) {
         sharedPrefs = (activity as AppCompatActivity).getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
         _binding = FragmentOverviewBinding.bind(view)
         binding.apply {
-            tvTotal.text = sharedPrefs.getString(KEY_TOTAL, DEFAULT_VALUE)
-            tvIncome.text = sharedPrefs.getString(KEY_INCOME, DEFAULT_VALUE)
-            tvExpense.text = sharedPrefs.getString(KEY_EXPENSE, DEFAULT_VALUE)
+            tvTotal.text = sharedPrefs.getInt(KEY_TOTAL, DEFAULT_VALUE).toString()
+            tvIncome.text = sharedPrefs.getInt(KEY_INCOME, DEFAULT_VALUE).toString()
+            tvExpense.text = sharedPrefs.getInt(KEY_EXPENSE, DEFAULT_VALUE).toString()
             val titles = listOf(
                 tvIncomeTitle, tvExpenseTitle, tvTotalTitle
             )

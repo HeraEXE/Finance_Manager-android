@@ -14,7 +14,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.hera.inancemanager.R
@@ -27,8 +30,11 @@ import com.hera.inancemanager.util.Constants.INCOME
 import com.hera.inancemanager.util.Constants.KEY_EXPENSE
 import com.hera.inancemanager.util.Constants.KEY_INCOME
 import com.hera.inancemanager.util.Constants.KEY_TOTAL
+import com.hera.inancemanager.util.Constants.SHARED_PREFS_NAME
+import com.hera.inancemanager.util.dataStore
 import com.hera.inancemanager.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,7 +47,7 @@ class AddEditEntryFragment : Fragment(R.layout.fragment_add_edit_entry), DatePic
     private val args: AddEditEntryFragmentArgs by navArgs()
     private var addEdit = 0
     private lateinit var entry: Entry
-    private var oldAmount: Double = 0.00
+    private var oldAmount: Int = 0
     private var _binding: FragmentAddEditEntryBinding? = null
     private val binding get() = _binding!!
 
@@ -62,7 +68,7 @@ class AddEditEntryFragment : Fragment(R.layout.fragment_add_edit_entry), DatePic
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sharedPrefs = (activity as AppCompatActivity).getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+        sharedPrefs = (activity as AppCompatActivity).getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
         _binding = FragmentAddEditEntryBinding.bind(view)
         showDate()
         binding.apply {
@@ -99,7 +105,7 @@ class AddEditEntryFragment : Fragment(R.layout.fragment_add_edit_entry), DatePic
                 val type = when (rgType.checkedRadioButtonId) {
                     rbIncome.id -> INCOME
                     rbExpense.id -> EXPENSE
-                    else -> INCOME
+                    else -> -1
                 }
                 if (validate(amount, type)) {
                     (activity as AppCompatActivity).hideKeyboard()
@@ -117,17 +123,17 @@ class AddEditEntryFragment : Fragment(R.layout.fragment_add_edit_entry), DatePic
                     negativeBtn.text = "Cancel"
                     positiveBtn.text = "Add"
                     positiveBtn.setOnClickListener {
-                        entry = entry.copy(amount = amount.toDouble(), type = type, note = note)
+                        entry = entry.copy(amount = amount.toInt(), type = type, note = note)
                         viewModel.insert(entry)
                         sharedPrefs.edit().apply {
-                            val total: Double = if (entry.type == INCOME) {
-                                sharedPrefs.getString(KEY_TOTAL, DEFAULT_VALUE)!!.toDouble() + amount.toDouble()
+                            val total = if (entry.type == INCOME) {
+                                sharedPrefs.getInt(KEY_TOTAL, DEFAULT_VALUE) + amount.toInt()
                             } else {
-                                sharedPrefs.getString(KEY_TOTAL, DEFAULT_VALUE)!!.toDouble() - amount.toDouble()
+                                sharedPrefs.getInt(KEY_TOTAL, DEFAULT_VALUE) - amount.toInt()
                             }
-                            val incomeExpense = sharedPrefs.getString(keys[entry.type], DEFAULT_VALUE)!!.toDouble() + amount.toDouble()
-                            putString(KEY_TOTAL, total.toString())
-                            putString(keys[entry.type], incomeExpense.toString())
+                            val incomeExpense = sharedPrefs.getInt(keys[entry.type], DEFAULT_VALUE) + amount.toInt()
+                            putInt(KEY_TOTAL, total)
+                            putInt(keys[entry.type], incomeExpense)
                             apply()
                         }
                         dialog.dismiss()
@@ -149,7 +155,7 @@ class AddEditEntryFragment : Fragment(R.layout.fragment_add_edit_entry), DatePic
                 val type = when (rgType.checkedRadioButtonId) {
                     rbIncome.id -> INCOME
                     rbExpense.id -> EXPENSE
-                    else -> INCOME
+                    else -> -1
                 }
                 if (validate(amount, type)) {
                     (activity as AppCompatActivity).hideKeyboard()
@@ -167,17 +173,17 @@ class AddEditEntryFragment : Fragment(R.layout.fragment_add_edit_entry), DatePic
                     negativeBtn.text = "Cancel"
                     positiveBtn.text = "Edit"
                     positiveBtn.setOnClickListener {
-                        entry = entry.copy(amount = amount.toDouble(), type = type, note = note)
+                        entry = entry.copy(amount = amount.toInt(), type = type, note = note)
                         viewModel.update(entry)
                         sharedPrefs.edit().apply {
                             val total = if (entry.type == INCOME) {
-                                sharedPrefs.getString(KEY_TOTAL, DEFAULT_VALUE)!!.toDouble() - oldAmount + amount.toDouble()
+                                sharedPrefs.getInt(KEY_TOTAL, DEFAULT_VALUE) - oldAmount + amount.toInt()
                             } else {
-                                sharedPrefs.getString(KEY_TOTAL, DEFAULT_VALUE)!!.toDouble() + oldAmount - amount.toDouble()
+                                sharedPrefs.getInt(KEY_TOTAL, DEFAULT_VALUE) + oldAmount - amount.toInt()
                             }
-                            val incomeExpense = sharedPrefs.getString(keys[entry.type], DEFAULT_VALUE)!!.toDouble() - oldAmount + amount.toDouble()
-                            putString(KEY_TOTAL, total.toString())
-                            putString(keys[entry.type], incomeExpense.toString())
+                            val incomeExpense = sharedPrefs.getInt(keys[entry.type], DEFAULT_VALUE) - oldAmount + amount.toInt()
+                            putInt(KEY_TOTAL, total)
+                            putInt(keys[entry.type], incomeExpense)
                             apply()
                         }
                         dialog.dismiss()
@@ -211,13 +217,13 @@ class AddEditEntryFragment : Fragment(R.layout.fragment_add_edit_entry), DatePic
                 viewModel.delete(entry)
                 sharedPrefs.edit().apply {
                     val total = if (entry.type == INCOME) {
-                        sharedPrefs.getString(KEY_TOTAL, DEFAULT_VALUE)!!.toDouble() - oldAmount
+                        sharedPrefs.getInt(KEY_TOTAL, DEFAULT_VALUE) - oldAmount
                     } else {
-                        sharedPrefs.getString(KEY_TOTAL, DEFAULT_VALUE)!!.toDouble() + oldAmount
+                        sharedPrefs.getInt(KEY_TOTAL, DEFAULT_VALUE) + oldAmount
                     }
-                    val incomeExpense = sharedPrefs.getString(keys[entry.type], DEFAULT_VALUE)!!.toDouble() - oldAmount
-                    putString(KEY_TOTAL, total.toString())
-                    putString(keys[entry.type], incomeExpense.toString())
+                    val incomeExpense = sharedPrefs.getInt(keys[entry.type], DEFAULT_VALUE) - oldAmount
+                    putInt(KEY_TOTAL, total)
+                    putInt(keys[entry.type], incomeExpense)
                     apply()
                 }
                 dialog.dismiss()

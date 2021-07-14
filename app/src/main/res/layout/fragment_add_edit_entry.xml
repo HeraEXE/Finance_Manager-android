@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:fontFamily="sans-serif-black"
-                    android:inputType="numberDecimal"
+                    android:inputType="number"
                     android:textSize="20sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 

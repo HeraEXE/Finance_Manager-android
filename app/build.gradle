@@ -102,8 +102,8 @@ dependencies {
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 
 
-    // Circle Image View
-    implementation "de.hdodenhof:circleimageview:$circle_image_view_version"
+    // DataStore preferences
+    implementation "androidx.datastore:datastore-preferences:1.0.0-rc01"
 
 
     // Picasso

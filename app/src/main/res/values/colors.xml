@@ -8,6 +8,7 @@
     <color name="whitish_green">#FF95D5B2</color>
     <color name="whitish_green_t">#AF95D5B2</color>
     <color name="blue">#FF4361EE</color>
+    <color name="blue_transparent">#AF4361EE</color>
     <color name="whitish_red">#FFFF758F</color>
     <color name="whitish_red_t">#AFFF758F</color>
 </resources>

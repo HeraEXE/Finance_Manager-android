@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Entity(tableName = "entry_table")
 data class Entry(
-    var amount: Double = 0.00,
+    var amount: Int = 0,
     var type: Int = 0,
     var note: String = "",
     var date: Long = System.currentTimeMillis(),
