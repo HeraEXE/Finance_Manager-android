@@ -1,7 +1,7 @@
 # Finance Manager for android
 
-![Screenshot_20210713-205336_Finance Manager](https://user-images.githubusercontent.com/70451674/125495726-6b89b3a4-7872-44e9-a2a2-4a2082a7664f.jpg)
+![Screenshot_20210714-121553_Finance Manager](https://user-images.githubusercontent.com/70451674/125588667-2e9aea1c-4674-490e-b246-4874e2e6c8f2.jpg)
 
-![Screenshot_20210713-204847_Finance Manager](https://user-images.githubusercontent.com/70451674/125495752-db4c3b1c-3cf4-4484-83e1-e1e850aa55b1.jpg)
+![Screenshot_20210714-121550_Finance Manager](https://user-images.githubusercontent.com/70451674/125588695-26dec426-bec5-4428-84c1-41cff3c7253b.jpg)
 
-![Screenshot_20210713-205338_Finance Manager](https://user-images.githubusercontent.com/70451674/125495783-701ea052-672d-429a-b4fb-99cd4fde9e82.jpg)
+![Screenshot_20210714-121555_Finance Manager](https://user-images.githubusercontent.com/70451674/125588716-635b6661-979c-4fb5-b055-5850072cc7bc.jpg)
